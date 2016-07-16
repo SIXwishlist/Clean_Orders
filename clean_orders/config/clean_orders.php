@@ -9,7 +9,7 @@ Configure::set("CleanOrders.install.emails", array(
 		'from' => "sales@mydomain.com",
 		'from_name' => "Blesta Clean Orders System",
 		'subject' => "Canceled Orders List has been deleted",
-		'text' => "The fallowing canceled orders has been been deleted by the system.
+		'text' => "The fallowing canceled orders has been deleted from listing by the system.
 
 Summary
 
@@ -23,7 +23,7 @@ Client id: {order.client_id_code}
 --
 {% endfor %}",
 		'html' => "
-	<p>The fallowing canceled orders has been been deleted by the system.</p>
+	<p>The fallowing canceled orders has been deleted from listing by the system.</p>
 	<p><strong>Summary</strong></p>
 	
 	{% for order in orders %}
