@@ -1,0 +1,11 @@
+{
+    "version": "1.0.5",
+    "name": "Auto Cancel Unpaid Orders",
+    "description": "Automatically Cancels Pending (Unpaid) orders.",
+    "authors": [
+        {
+			"name": "KST S.L",
+			"url": "http://www.kst-hosting.com"
+        }
+    ]
+}
