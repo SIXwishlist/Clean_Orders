@@ -24,12 +24,15 @@ class CleanOrdersServices extends AppModel
 
         $order_timelife = $this->dateToUtc($this->Date->cast(strtotime('-' . $cancel_days . ' days'), 'c'));
 
-		// $this->Record = $this->getOrders("active");		
-		$this->Record = $this->getOrders(null);		
+		$this->Record = $this->getOrders("active");	
 
 		// return // for test purpose
 		$orders = $this->Record->where('orders.date_added', '<=', $order_timelife)->group(array("order_number"))->fetchAll();	
-
+		
+		// if no orders stop .
+		if (empty($orders))
+			return; 
+		
         foreach ($orders as $order) {
 			
 			$order->services = $services = $this->Record->select(array('services.id'))->from("order_services")->
@@ -68,10 +71,7 @@ class CleanOrdersServices extends AppModel
 				}
 			}
         }
-		
-		if (!isset($this->Emails))
-			Loader::loadModels($this, array("Emails"));
-		
+				
 		// Send email notifications to staff about the order
 		$tags = array(
 			'orders' => $orders,
@@ -88,12 +88,12 @@ class CleanOrdersServices extends AppModel
 		$to_addresses = array();
 		foreach ($staff_email as $staff)
 			$to_addresses[] = $staff->email;
+
+		if (!isset($this->Emails))
+			Loader::loadModels($this, array("Emails"));
 		
-		// print_r($to_addresses);die();
 		// Send to staff email
-		$this->Emails->send("CleanOrders.delete_canceled_orders", Configure::get("Blesta.company_id"), null, $to_addresses, $tags);	
-		
-		// return $orders ;
+		$this->Emails->send("CleanOrders.cancel_unpaid_orders", Configure::get("Blesta.company_id"), null, $to_addresses, $tags);	
     }
   
   /**
@@ -115,9 +115,10 @@ class CleanOrdersServices extends AppModel
 		// return // for test purpose
 		$orders = $this->Record->where('orders.date_added', '<=', $order_timelife)->group(array("order_number"))->fetchAll();
 
-		if (!isset($this->Emails))
-			Loader::loadModels($this, array("Emails"));
-		
+		// if no orders stop .
+		if (empty($orders))
+			return; 	
+				
         foreach ($orders as $order) {
 			$this->Record->from("order_services")->where("order_id", "=", $order->id)->delete();
 			$this->Record->from("orders")->where("id", "=", $order->id)->delete();
@@ -138,8 +139,11 @@ class CleanOrdersServices extends AppModel
 		foreach ($staff_email as $staff)
 			$to_addresses[] = $staff->email;
 		
+		if (!isset($this->Emails))
+			Loader::loadModels($this, array("Emails"));
+		
 		// Send to staff email
-		$this->Emails->send("CleanOrders.cancel_unpaid_orders", Configure::get("Blesta.company_id"), null, $to_addresses, $tags);			
+		$this->Emails->send("CleanOrders.delete_canceled_orders", Configure::get("Blesta.company_id"), null, $to_addresses, $tags);			
     }
 
 	/**

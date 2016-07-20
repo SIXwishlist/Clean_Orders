@@ -1,5 +1,5 @@
 {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "name": "Auto Cancel Unpaid Orders",
     "description": "Automatically Cancels Pending (Unpaid) orders.",
     "authors": [
