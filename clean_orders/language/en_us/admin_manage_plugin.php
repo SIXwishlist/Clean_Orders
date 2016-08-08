@@ -5,6 +5,9 @@ $lang['AdminManagePlugin.index.page_title'] = "Auto Cancel Unpaid Orders";
 $lang['AdminManagePlugin.index.boxtitle'] = "Auto Cancel Unpaid Orders";
 $lang['AdminManagePlugin.index.heading_settings'] = "Settings";
 
+$lang['AdminManagePlugin.index.add_donate'] = "Donate";
+$lang['AdminManagePlugin.index.donate_link'] = " ,  Your financial support is highly appreciated, and helps me keeping the development going!";
+
 $lang['AdminManagePlugin.index.field.cancel_days'] = "Set order lifetime (after XX days unpaid order will be cancelled)";
 $lang['AdminManagePlugin.index.field.invoices_action'] = "Invoice Action";
 $lang['AdminManagePlugin.index.field.services_action'] = "Service Action";

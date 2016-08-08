@@ -27,10 +27,7 @@ class AdminManagePlugin extends AppController
     {
         $this->init();
 
-        $vars = (object) $this->CleanOrdersSettings->getSettings($this->parent->company_id);
-		// $test = $this->CleanOrdersServices->cancelUnpaidOrders($this->parent->company_id, "2", $vars->services_action, $vars->invoices_action);
-		// echo "<pre>";
-		// print_r($test);die();
+        $vars = (object)$this->CleanOrdersSettings->getSettings($this->parent->company_id);	
 		
         if (!empty($this->post)) {
             $this->CleanOrdersSettings->setSettings($this->parent->company_id,$this->post);
@@ -48,8 +45,9 @@ class AdminManagePlugin extends AppController
         $clear_orders = $this->getDays(7, 60);
         $invoice_actions = $this->getActionsForInvoices();
         $services_actions = $this->getActionsForServices();
+		$donate_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2FQKWFL73CV9N";		
         // Set the view to render
-        return $this->partial('admin_manage_plugin', compact('vars', 'days', 'invoice_actions', 'services_actions', 'clear_orders'));
+        return $this->partial('admin_manage_plugin', compact('vars', 'days', 'invoice_actions', 'services_actions', 'clear_orders', 'donate_url'));
     }
 
     /**
@@ -100,5 +98,7 @@ class AdminManagePlugin extends AppController
 		);
 
         return $action;
-    }		
+    }
+	
+
 }

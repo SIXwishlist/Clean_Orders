@@ -1,5 +1,12 @@
     <?php
+	$link_buttons = array(
+		array('name'=>$this->_("AdminManagePlugin.index.add_donate", true),  'attributes'=>array('href'=> $this->Html->ifSet($donate_url) , 'class'=>"add_donate")),
+	);
+		
+	
     $this->Widget->clear();
+	$this->Widget->setStyleSheet($this->view_dir . "css/styles.css");	
+	$this->Widget->setLinkButtons($link_buttons);	
     $this->Widget->create($this->_('AdminManagePlugin.index.boxtitle', true));
     $this->Form->create();
     ?>
@@ -38,6 +45,11 @@
         </div>
         <div class="button_row"><a class="btn_right submit" href="#"><?php $this->_('AdminManagePlugin.index.field.submit');?></a></div>
     </div>
+	
+	<div class="title_row"> 
+		<h3><a href="<?php echo $this->Html->safe($donate_url);?>" ><?php $this->_("AdminManagePlugin.index.add_donate");?></a><?php $this->_("AdminManagePlugin.index.donate_link");?></h3>
+	</div>
+	
     <?php
     $this->Form->end();
     $this->Widget->end();

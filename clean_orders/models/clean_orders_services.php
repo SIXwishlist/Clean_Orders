@@ -24,7 +24,7 @@ class CleanOrdersServices extends AppModel
 
         $order_timelife = $this->dateToUtc($this->Date->cast(strtotime('-' . $cancel_days . ' days'), 'c'));
 
-		$this->Record = $this->getOrders("active");	
+		$this->Record = $this->getOrders("active");		
 
 		// return // for test purpose
 		$orders = $this->Record->where('orders.date_added', '<=', $order_timelife)->group(array("order_number"))->fetchAll();	
@@ -59,16 +59,15 @@ class CleanOrdersServices extends AppModel
 				$this->addNoteToInvoice($order->invoice_id);
 
 				// delete service if is not active status
-				if ($services_action === 'delete') {			
-					foreach($services as $service) {
-						$this->Record->from("services")->where("id", "=", $service->id)->delete();
-					}
+				if ($services_action == 'delete') {
+					foreach($services as $service)
+						$this->deleteService($service->id);
 				}
 
 				// delete invoice related to the order
-				if ($invoices_action === 'delete') {
-					$this->Record->from("invoices")->where("id", "=", $order->invoice_id)->delete();
-				}
+				if ($invoices_action == 'delete')
+					$this->deleteInvoice($order->invoice_id);
+
 			}
         }
 				
@@ -203,6 +202,50 @@ class CleanOrdersServices extends AppModel
 			'note_public' => Language::_("CleanOrdersServices.invoice.add_note", true),
 			'status' => "void"
 		));
-	}		
+	}
+	
+	/**
+	 * Delete Invoice
+	 */
+	public function deleteInvoice($invoice_id = null)
+	{
+		if (!$invoice_id)
+			return;
 
+        if (!isset($this->Invoices))
+            Loader::loadModels($this, array('Invoices'));
+			
+		// Delete Invoice Delivery
+		$this->Record->from("invoice_delivery")->where("invoice_id", "=", $invoice_id)->delete();
+		// Delete Invoice's Lines and taxes
+		$this->Record->from("invoice_lines")->
+			leftJoin("invoice_line_taxes", "invoice_line_taxes.line_id", "=", "invoice_lines.id", false)->
+			where("invoice_lines.invoice_id", "=", $invoice_id)->
+			delete(array("invoice_line_taxes.*", "invoice_lines.*"));
+		// Delete Invoice			
+		$this->Record->from("invoices")->where("id", "=", $invoice_id)->delete();
+		// Delete recuring invoice
+		$invoice_recur_id = $this->Invoices->getRecurringFromInvoices($invoice_id);
+		
+		if ($invoice_recur_id)
+			$this->Invoices->deleteRecurring($invoice_recur_id);
+
+	}
+	
+	/**
+	 * Delete Services
+	 */
+	public function deleteService($service_id = null)
+	{
+		if (!$service_id)
+			return;
+		
+		// Delete Service Fields
+		$this->Record->from("service_fields")->where("service_id", "=", $service_id)->delete();
+		// Delete Service Options & Service Upgrades Pending process
+		$this->Record->from("service_options")->where("service_id", "=", $service_id)->delete();
+		$this->Record->from("service_changes")->where("service_id", "=", $service_id)->delete();
+		// Delete Service		
+		$this->Record->from("services")->where("id", "=", $service_id)->delete();
+	}		
 }
